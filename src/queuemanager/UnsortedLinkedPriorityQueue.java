@@ -9,6 +9,6 @@ package queuemanager;
  *
  * @author LUCIE
  */
-public class UnsortedLinkedPriorityQueue {
+public class UnsortedLinkedPriorityQueue<T> implements PriorityQueue<T> {
     
 }
