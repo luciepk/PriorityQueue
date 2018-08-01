@@ -22,7 +22,8 @@ public class UnsortedLinkedPriorityQueue<T> implements PriorityQueue<T> {
     public T head() throws QueueUnderflowException {
         if (isEmpty()) {
             throw new QueueUnderflowException();
-        } else {
+        } 
+        else {
 
             ListNode<T> current = head;// stock the currnt node
             int p = current.getItem().getPriority();// to stock the highest priority

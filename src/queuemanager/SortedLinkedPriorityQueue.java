@@ -31,6 +31,13 @@ public class SortedLinkedPriorityQueue<T> implements PriorityQueue<T> {
         //creation of a new item we want
         PriorityItem<T> newItem = new PriorityItem<>(item, priority);
 
+        // if queue is empty or new item has larger priority than the head
+        
+        if (isEmpty() || head.getItem().getPriority() < priority) {
+            head = new ListNode<>(newItem, head);
+            return;
+        }
+        
         ListNode<T> current = head;
 
         // while current node is not the last item in the queue
