@@ -97,37 +97,49 @@ public class HeapPriorityQueue<T> implements PriorityQueue<T> {
         storage[tailIndex] = null;
         tailIndex--;// keep the size update
 
-        downRightPosition(tailIndex);
+        siftDown(tailIndex);
 
     }
 
     /**
      * Recursive method that places node from the root of the heap in the
-     * correct place so it maintains the max heap property.
+     * correct place 
      *
-     * @param nodeIndex Index of the node that is moved.
+     * 
      */
-    private void downRightPosition(int tailIndex) {
-        int i = 1;
+    private void siftDown(int nodeIndex) {
+        int leftChildIndex = 2 * nodeIndex;// to get the 2 node
+        int rightChildIndex = 2 * nodeIndex + 1;// to get the 3 node
+        int largerChildIndex = leftChildIndex;
 
-        PriorityItem<T> parent = (PriorityItem<T>) storage[tailIndex];
-        PriorityItem<T> node = (PriorityItem<T>) storage[i];
+        // if a node does not have a child return
+        if (leftChildIndex > tailIndex) {
+            return;
+        }
+
+        // if node has a right child, check if it has a larger priority than the left child
+        if (rightChildIndex <= tailIndex) {
+            int leftChildPriority = ((PriorityItem<T>) storage[leftChildIndex]).getPriority();
+            int rightChildPriority = ((PriorityItem<T>) storage[rightChildIndex]).getPriority();
+
+            if (leftChildPriority < rightChildPriority) {
+                largerChildIndex = rightChildIndex;
+            }
+        }
+
+        int parentNodePriority = ((PriorityItem<T>) storage[nodeIndex]).getPriority();
+        int smallerChildNodePriority = ((PriorityItem<T>) storage[largerChildIndex]).getPriority();
+
+        // return if parent is already larger than the larger child
+        if (parentNodePriority > smallerChildNodePriority) {
+            return;
+        }
 
         // swap child and parent
-        Object temporaryNode;
-
-        while (i != tailIndex) {
-            temporaryNode = storage[tailIndex];// to help you swap to value
-            storage[tailIndex] = storage[i];
-            storage[i] = temporaryNode;
-            i--;
-            temporaryNode = storage[tailIndex];// to help you swap to value
-            storage[tailIndex] = storage[i];
-            storage[i] = temporaryNode;
-            tailIndex--;
-
-        }
-                
+        Object temporaryNode = storage[largerChildIndex];// to help you swap to value
+        storage[largerChildIndex] = storage[nodeIndex];
+        storage[nodeIndex] = temporaryNode;
+        siftDown(largerChildIndex);    
 
     }
 
