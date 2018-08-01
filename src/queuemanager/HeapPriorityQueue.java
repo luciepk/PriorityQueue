@@ -34,13 +34,12 @@ public class HeapPriorityQueue<T> implements PriorityQueue<T> {
      */
     public HeapPriorityQueue(int size) {
         storage = new Object[size];
-        storage[0] = 0; 
+        storage[0] = 0;
         capacity = size;
         tailIndex = 0;
     }
 
     //Returns the head of the queue, which is the second item in the array so in the place 1
-     
     @Override
     public T head() throws QueueUnderflowException {
         if (isEmpty()) {
@@ -50,7 +49,6 @@ public class HeapPriorityQueue<T> implements PriorityQueue<T> {
         return ((PriorityItem<T>) storage[1]).getItem();
     }
 
-   
     @Override
     public void add(T item, int priority) throws QueueOverflowException {
         if (tailIndex >= capacity - 1) {
@@ -59,37 +57,33 @@ public class HeapPriorityQueue<T> implements PriorityQueue<T> {
 
         tailIndex++; // keep the size update
         storage[tailIndex] = new PriorityItem<>(item, priority);
-        rightPosition(tailIndex);// use the right possition function
+        upRightPosition(tailIndex);// use the right possition function
     }
 
     // Method that place new  node in the correct place 
-     
-     
-    private void rightPosition(int numberOfNode) {
+    private void upRightPosition(int tailIndex) {
         // return when there is only one item in the queue
-        if (numberOfNode == 1) {
+        if (tailIndex == 1) {
             return;
         }
 
-        int parentIndex = numberOfNode / 2; // get you into the middle 
+        int parentIndex = tailIndex / 2; // get you into the middle 
         PriorityItem<T> parent = (PriorityItem<T>) storage[parentIndex];
-        PriorityItem<T> node = (PriorityItem<T>) storage[numberOfNode];
+        PriorityItem<T> node = (PriorityItem<T>) storage[tailIndex];
 
-        // return when parent node is already larger than the child node
+        // return when parent node is already larger than the node
         if (parent.getPriority() > node.getPriority()) {
             return;
         }
 
         // swap child and parent
-        
         Object temporaryNode = storage[parentIndex];// to help you swap to value
-        storage[parentIndex] = storage[numberOfNode];
-        storage[numberOfNode] = temporaryNode;
+        storage[parentIndex] = storage[tailIndex];
+        storage[tailIndex] = temporaryNode;
 
-        rightPosition(parentIndex);
+        upRightPosition(parentIndex);
     }
 
-  
     @Override
     public void remove() throws QueueUnderflowException {
         if (isEmpty()) {
@@ -103,7 +97,8 @@ public class HeapPriorityQueue<T> implements PriorityQueue<T> {
         storage[tailIndex] = null;
         tailIndex--;// keep the size update
 
-        bubbleDown(1);
+        downRightPosition(tailIndex);
+
     }
 
     /**
@@ -112,43 +107,29 @@ public class HeapPriorityQueue<T> implements PriorityQueue<T> {
      *
      * @param nodeIndex Index of the node that is moved.
      */
-    private void bubbleDown(int nodeIndex) {
-        int leftChildIndex = 2 * nodeIndex;
-        int rightChildIndex = 2 * nodeIndex + 1;
-        int largerChildIndex = leftChildIndex;
+    private void downRightPosition(int tailIndex) {
+        int i = 1;
 
-        // if a node does not have a child return
-        if (leftChildIndex > tailIndex) {
-            return;
+        PriorityItem<T> parent = (PriorityItem<T>) storage[tailIndex];
+        PriorityItem<T> node = (PriorityItem<T>) storage[i];
+
+        // swap child and parent
+        Object temporaryNode;
+
+        while (i != tailIndex) {
+            temporaryNode = storage[tailIndex];// to help you swap to value
+            storage[tailIndex] = storage[i];
+            storage[i] = temporaryNode;
+            i--;
+            temporaryNode = storage[tailIndex];// to help you swap to value
+            storage[tailIndex] = storage[i];
+            storage[i] = temporaryNode;
+            tailIndex--;
+
         }
+                
 
-        // if node has a right child, check if it has a larger priority than the left child
-        if (rightChildIndex <= tailIndex) {
-            int leftChildPriority = ((PriorityItem<T>) storage[leftChildIndex]).getPriority();
-            int rightChildPriority = ((PriorityItem<T>) storage[rightChildIndex]).getPriority();
-
-            if (leftChildPriority < rightChildPriority) {
-                largerChildIndex = rightChildIndex;
-            }
-        }
-
-        int parentNodePriority = ((PriorityItem<T>) storage[nodeIndex]).getPriority();
-        int smallerChildNodePriority = ((PriorityItem<T>) storage[largerChildIndex]).getPriority();
-
-        // return if parent is already larger than the larger child
-        if (parentNodePriority > smallerChildNodePriority) {
-            return;
-        }
-
-        // swap node with the higher priority child
-       
-        Object temporaryNode = storage[largerChildIndex];
-        storage[largerChildIndex] = storage[nodeIndex];
-        storage[nodeIndex] = temporaryNode;
-        bubbleDown(largerChildIndex);
     }
-
-
 
     @Override
     public boolean isEmpty() {
@@ -160,7 +141,7 @@ public class HeapPriorityQueue<T> implements PriorityQueue<T> {
         String result = "[";
         for (int i = 1; i <= tailIndex; i++) {
             if (i > 1) {
-                 result = result + ", ";
+                result = result + ", ";
             }
             result = result + storage[i];
         }
