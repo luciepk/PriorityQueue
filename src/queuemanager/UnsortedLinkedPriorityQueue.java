@@ -55,25 +55,18 @@ public class UnsortedLinkedPriorityQueue<T> implements PriorityQueue<T> {
             throw new QueueUnderflowException();
         } 
         else {
-            T head = head();
-            ListNode<T> current = head;
-            ListNode<T> before = head; //use to stock the node before cuurent
-            int p = current.priority;// to stock the highest priority
-            ListNode Big = head; //to stock the data of the hghest priority
-            //we move the node we created inside the list
-            while (current.next != null) {
-                if (p < current.next.priority) {
-                    p = current.next.priority;
-                    Big.data = current.next.data;
-                }
-                current = current.next;
+            T highest = head();// is the highest priority node
+            ListNode<T> current = head;//is the first node of the list
+            ListNode<T> previous = null;// stock the previous node
+            
+            while (current != null && current.getItem().getItem() != head) {
+            previous = current;
+            current = current.getNext();
             }
-            current = head; // we come back at the beginning of the list    
-            while (current.data != Big.data) {
-                before = current;
-                current = current.next;
-            }
-            before = current.next;
+
+        // delete the head node by taking the value of the next to the current node
+        previous.setNext(current.getNext());
+
         }
     }
 
