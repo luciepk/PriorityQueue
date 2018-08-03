@@ -6,27 +6,13 @@
 package queuemanager;
 
 /**
- *@param <T> The type of things being stored.
+ * @param <T> The type of things being stored.
  * @author LUCIE
  */
 public class SortedLinkedPriorityQueue<T> implements PriorityQueue<T> {
-    
-// create the node to use in the list    
-    class Node<T>
-    {
-       T data;
-       int priority;
-       Node<T> next;
 
-       public Node(T data,int priority, Node<T> next)
-       {
-          this.data = data;
-          this.priority = priority;
-          this.next = next;
-       }
-    }
+    private ListNode<T> head;
 
-    Node head;
     //constructor
     public SortedLinkedPriorityQueue() {
     }
@@ -36,39 +22,45 @@ public class SortedLinkedPriorityQueue<T> implements PriorityQueue<T> {
         if (isEmpty()) {
             throw new QueueUnderflowException();
         } else {
-            return ((PriorityItem<T>) head.data).getItem();//return the item witch is in the node head
+            return head.getItem().getItem();//return the item witch is in the node head
         }
     }
 
     @Override
-    public void add(T item, int priority){
-       //creation of a new node we are going to add
-       Node addnode = new Node<>(item,priority, head);
-       //we put this node at the beginning
-       Node current = head;
-       //we move the node we created inside the list
-       while ( current.next.priority < priority && current.next != null ) {
-        current = current.next;  
+    public void add(T item, int priority) {
+        //creation of a new item we want
+        PriorityItem<T> newItem = new PriorityItem<>(item, priority);
+
+        // if queue is empty or new item has larger priority than the head
+        
+        if (isEmpty() || head.getItem().getPriority() < priority) {
+            head = new ListNode<>(newItem, head);
+            return;
         }
-       //we add the new node in the middle
-       addnode.next = current.next;
-       current.next = addnode;
-          
+        
+        ListNode<T> current = head;
+
+        // while current node is not the last item in the queue
+        // and the next node has larger priority than the node that is being added
+        while (current.getNext() != null
+                && priority < current.getNext().getItem().getPriority()) {
+            current = current.getNext();
+        }
+
+        // create a new node and add it to the current node next position
+        ListNode<T> newNode = new ListNode<>(newItem, current.getNext());
+        current.setNext(newNode);
     }
- 
 
     @Override
     public void remove() throws QueueUnderflowException {
         if (head == null) {
             throw new QueueUnderflowException();
-        } 
-        else {
+        } else {
             //the head take the value of the segond node so the first one is not in the list
-            head= head.next;
+            head = head.getNext();
         }
-     }
- 
-    
+    }
 
     @Override
     public boolean isEmpty() {
@@ -77,15 +69,13 @@ public class SortedLinkedPriorityQueue<T> implements PriorityQueue<T> {
 
     @Override
     public String toString() {
-        String result ="[";
-         Node temp = head;
-         while (temp != null)
-         {
-             result = result + temp.next +",";
-            //System.out.print(temp.data+" ");
-            temp = temp.next;
-         }
-         result = result + "]";
-         return result ;
-    }   
+        String result = "[";
+        ListNode<T> temp = head;
+        while (temp != null) {
+            result = result + temp.getItem() + ",";
+            temp = temp.getNext();
+        }
+        result = result + "]";
+        return result;
+    }
 }
